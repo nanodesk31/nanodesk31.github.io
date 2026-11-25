@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Télécharger RustDesk</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--text:#14171c;--muted:#5b6472;--accent:#2563eb;--accent-text:#fff;--border:#dfe3e8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1116;--card:#171b22;--text:#e8ebf0;--muted:#98a2b3;--accent:#4f8cff;--accent-text:#0b1020;--border:#2a303b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1116;--card:#171b22;--text:#e8ebf0;--muted:#98a2b3;--accent:#4f8cff;--accent-text:#0b1020;--border:#2a303b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:40px 20px}
+h1{font-size:2rem;margin:0 0 6px}
+.sub{color:var(--muted);margin:0 0 28px}
+.hero{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:24px}
+.hero p{margin:0 0 14px;color:var(--muted)}
+.btn{display:inline-block;padding:12px 20px;border-radius:10px;background:var(--accent);color:var(--accent-text);text-decoration:none;font-weight:600}
+.btn:hover{opacity:.9}
+.btn.alt{background:transparent;color:var(--accent);border:1px solid var(--border)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.card.hl{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.card h3{margin:0 0 10px;font-size:1rem}
+.card a{display:block;margin:6px 0;color:var(--accent);text-decoration:none;font-size:.95rem}
+.card a:hover{text-decoration:underline}
+footer{margin-top:32px;color:var(--muted);font-size:.85rem}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Télécharger RustDesk</h1>
+  <p class="sub">Bureau à distance libre et open source. Version <span id="v"></span>.</p>
+
+  <section class="hero">
+    <p id="detect">Détection du système…</p>
+    <a class="btn" id="main" href="#">Télécharger</a>
+  </section>
+
+  <section class="grid" id="grid"></section>
+
+  <footer>
+    Les fichiers sont servis directement depuis les <a href="https://github.com/rustdesk/rustdesk/releases/latest" rel="noopener">publications officielles GitHub</a> de RustDesk. Cette page n’héberge aucun binaire.
+    Vérifiez toujours que vous avez la <a href="https://github.com/rustdesk/rustdesk/releases/latest" rel="noopener">dernière version</a>.
+  </footer>
+</main>
+<script>
+// Pour mettre à jour : changer uniquement cette ligne.
+var VERSION = "1.4.5";
+var BASE = "https://github.com/rustdesk/rustdesk/releases/download/" + VERSION + "/rustdesk-" + VERSION;
+var P = {
+  windows: {label:"Windows", links:[["Installateur 64 bits (.exe)", BASE+"-x86_64.exe"],["Installateur 64 bits (.msi)", BASE+"-x86_64.msi"],["32 bits (.exe)", BASE+"-x86-sciter.exe"]]},
+  mac: {label:"macOS", links:[["Apple Silicon (M1/M2/M3…)", BASE+"-aarch64.dmg"],["Intel", BASE+"-x86_64.dmg"]]},
+  linux: {label:"Linux", links:[["Debian/Ubuntu x86-64 (.deb)", BASE+"-x86_64.deb"],["Autres distributions", "https://github.com/rustdesk/rustdesk/releases/latest"]]},
+  android: {label:"Android", links:[["APK universel", BASE+"-universal-signed.apk"]]},
+  ios: {label:"iOS", links:[["App Store", "https://apps.apple.com/us/app/rustdesk-remote-desktop/id1581225015"]]}
+};
+function detect(){
+  var ua = navigator.userAgent || "", pf = navigator.platform || "";
+  if (/Android/i.test(ua)) return "android";
+  if (/iPhone|iPad|iPod/i.test(ua)) return "ios";
+  if (/Win/i.test(pf) || /Windows/i.test(ua)) return "windows";
+  if (/Mac/i.test(pf)) return "mac";
+  if (/Linux|X11/i.test(pf + ua)) return "linux";
+  return "windows";
+}
+var cur = detect();
+document.getElementById("v").textContent = VERSION;
+var grid = document.getElementById("grid");
+Object.keys(P).forEach(function(k){
+  var c = document.createElement("div");
+  c.className = "card" + (k === cur ? " hl" : "");
+  var h = document.createElement("h3"); h.textContent = P[k].label; c.appendChild(h);
+  P[k].links.forEach(function(l){
+    var a = document.createElement("a"); a.textContent = l[0]; a.href = l[1]; a.rel = "noopener"; c.appendChild(a);
+  });
+  grid.appendChild(c);
+});
+var m = document.getElementById("main");
+m.href = P[cur].links[0][1];
+m.textContent = "Télécharger pour " + P[cur].label;
+document.getElementById("detect").textContent = "Système détecté : " + P[cur].label + (cur === "mac" ? " (choisissez Intel ou Apple Silicon ci-dessous si le lien ne convient pas)" : "");
+</script>
+</body>
+</html>
